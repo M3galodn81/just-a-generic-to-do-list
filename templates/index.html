@@ -71,7 +71,6 @@ Home
             <input type="hidden" id="view_task_id">
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="editTask()">Save</button>
         <button onclick="deleteTask(document.getElementById('view_task_id').value)" data-dismiss="modal">Delete</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
@@ -176,7 +175,8 @@ async function viewTask(taskId) {
     // populate the view modal fields
     document.getElementById("view_title").value = task.title;
     document.getElementById("view_description").value = task.description;
-    document.getElementById("view_priority").value = task.priority;
+    const priorityMap = { 1: "LOW", 2: "MEDIUM", 3: "HIGH", 4: "CRITICAL" };
+    document.getElementById("view_priority").value = priorityMap[task.priority];
     document.getElementById("view_task_id").value = taskId;
 
     // open the modal

@@ -42,14 +42,9 @@ def create_task():
 def get_tasks():
     return db_methods.get_tasks()
 
-@app.route("/api/task/<int:task_id>", methods=["GET"])
+@app.route("/api/tasks/<int:task_id>", methods=["GET"])
 def get_task(task_id):
     return db_methods.get_task(task_id)
-
-# Update
-@app.route("/api/tasks", methods=["PATCH"])
-def update_task():
-    return render_template("index.html")
 
 @app.route("/api/tasks/<int:task_id>", methods=["PATCH"])
 def mark_task(task_id):
