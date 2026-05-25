@@ -74,7 +74,6 @@ def get_task(task_id):
     return jsonify(task)
 
 def mark_task(task_id, is_done):
-
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
 
@@ -96,25 +95,15 @@ def mark_task(task_id, is_done):
 
     print(f"Task ID {task_id} was marked successfully")
 
-def update_task(task):
-
+def update_task(task_id, title, description, priority):
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS tasks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        description TEXT,
-        priority INTEGER,
-        is_done INTEGER DEFAULT 0
+    cursor.execute(
+        "UPDATE tasks SET title = ?, description = ?, priority = ? WHERE id = ?",
+        (title, description, priority, task_id)
     )
-    """)
-
     connection.commit()
     connection.close()
-
-    print(f"{task} was added successfully")
 
 def delete_task(task_id):
 
