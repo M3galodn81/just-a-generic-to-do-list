@@ -58,7 +58,7 @@ def get_task(task_id):
     cursor = connection.cursor()
 
     cursor.execute("SELECT * FROM tasks WHERE id = ?", (task_id,))
-    task = cursor.fetchonce()
+    task = cursor.fetchone()
 
     connection.close()
 
