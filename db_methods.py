@@ -29,7 +29,7 @@ def add_task(task: user_task.UserTask):
 
     print(f"{task} was added successfully")
 
-def get_task():
+def get_tasks():
 
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
@@ -51,6 +51,27 @@ def get_task():
 
     print(f"Tasks was retrived successfully")
     return jsonify(task_list)
+
+def get_tasks(task_id):
+
+    connection = sqlite3.connect(DB_NAME)
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM tasks WHERE id = ?", task_id)
+    task = cursor.fetchall()
+
+    connection.close()
+
+    task = {
+        "id": task[0],
+        "title": task[1],
+        "description": task[2],
+        "priority": task[3],
+        "is_done": task[4]
+    }
+
+    print(f"Task {task_id} was retrived successfully")
+    return jsonify(task)
 
 def mark_task(task_id, is_done):
 
@@ -95,23 +116,18 @@ def update_task(task):
 
     print(f"{task} was added successfully")
 
-def delete_task(task):
+def delete_task(task_id):
 
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS tasks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        description TEXT,
-        priority INTEGER,
-        is_done INTEGER DEFAULT 0
+    cursor.execute(
+        "DELETE FROM tasks WHERE id = ?",
+        (task_id)
     )
-    """)
 
     connection.commit()
     connection.close()
 
-    print(f"{task} was added successfully")
+    print(f"Task {task_id} was delete successfully")
 

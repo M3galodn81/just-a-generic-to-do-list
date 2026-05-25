@@ -40,7 +40,11 @@ def create_task():
 # Retrive task
 @app.route("/api/tasks", methods=["GET"])
 def get_tasks():
-    return db_methods.get_task()
+    return db_methods.get_tasks()
+
+@app.route("/api/task/<int:task_id>", methods=["GET"])
+def get_task(task_id):
+    return db_methods.get_task(task_id)
 
 # Update
 @app.route("/api/tasks", methods=["PATCH"])
@@ -48,27 +52,17 @@ def update_task():
     return render_template("index.html")
 
 @app.route("/api/tasks/<int:task_id>", methods=["PATCH"])
-def update_task(task_id):
+def mark_task(task_id):
     data = request.get_json()
     is_done = data.get("is_done")
     db_methods.mark_task(task_id, is_done)
     return jsonify({"message": "Task updated successfully"})
 
 # Delete
-@app.route("/api/tasks", methods=["DELETE"])
-def delete_task():
-    data = request.json
+@app.route("/api/tasks/<int:task_id>", methods=["DELETE"])
+def delete_task(task_id):
+    db_methods.delete_task(task_id)
+    return jsonify({"message": "Task updated successfully"})
 
-    task = user_task.UserTask(
-        title=data["title"],
-        description=data["description"],
-        priority=user_task.Priority[data["priority"]]
-    )
-
-    db_methods.delete_task(taskId)
-
-    return jsonify({
-        "message": "Task added successfully"
-    }), 201
 
 
