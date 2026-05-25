@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+
+
+<!-- Trigger the modal with a button -->
+<button type="button"
+  class="btn btn-info btn-lg"
+  data-toggle="modal"
+  data-target="#myModal">
+  Add Task
+</button>
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add Task</h4>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="title" class="form-control" placeholder="Title">
+        <br>
+        <textarea id="description" class="form-control" placeholder="Description"></textarea>
+        <br>
+        <select id="priority" class="form-control">
+            <option>LOW</option>
+            <option>MEDIUM</option>
+            <option>HIGH</option>
+            <option>CRITICAL</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="addTask()">Save Task</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add Task</h4>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="title" class="form-control" placeholder="Title">
+        <br>
+        <textarea id="description" class="form-control" placeholder="Description"></textarea>
+        <br>
+        <select id="priority" class="form-control">
+            <option>LOW</option>
+            <option>MEDIUM</option>
+            <option>HIGH</option>
+            <option>CRITICAL</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="editTask()">Save</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<div class="list-group" id="task-list">
+
+</div>
+
+<script>
+async function loadTasks() {
+    const response = await fetch("/api/tasks");
+    const tasks = await response.json();
+
+    const taskList = document.getElementById("task-list");
+
+    taskList.innerHTML = "";
+
+    tasks.forEach(task => {
+        const title = document.createElement("h3");
+        title.className = "list-group-item-heading";
+        title.textContent = task.title;
+
+        const p_description = document.createElement("p");
+        p_description.className = "list-group-item-text"
+        p_description.textContent = task.description
+
+        const view_button = document.createElement("button");
+        view_button.type = "button"
+        view_button.className = "btn btn-default pull-right";
+        view_button.onclick = () => viewTask(task.id);
+        view_button.textContent = "View"
+
+        const mark_button = document.createElement("input");
+        mark_button.type = "checkbox";
+        mark_button.checked = task.is_done;  // reflect current state from DB
+        mark_button.className = "pull-left";
+        mark_button.onclick = () => markTask(task.id, mark_button.checked);
+
+        const li = document.createElement("li");
+        
+        var priority_class = "list-group-item";
+        switch (task.priority){
+            case 1:
+                priority_class = "list-group-item list-group-item-success";
+                break;
+            case 2:
+                priority_class = "list-group-item list-group-item-info";
+                break;
+            case 3:
+                priority_class = "list-group-item list-group-item-warning";
+                break;
+            case 4:
+                priority_class = "list-group-item list-group-item-danger";
+                break;
+            default:
+                priority_class = "list-group-item";
+                break;
+                
+        }
+        console.log(task.priority)
+        li.className = priority_class;
+
+        li.appendChild(mark_button);
+        li.appendChild(view_button);
+        li.appendChild(title);
+        li.appendChild(p_description);
+
+        taskList.appendChild(li);
+    });
+}
+
+async function addTask() {
+
+    const title = document.getElementById("title").value;
+    const description = document.getElementById("description").value;
+    const priority = document.getElementById("priority").value;
+
+    await fetch("/api/tasks", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            title,
+            description,
+            priority
+        })
+    });
+
+    loadTasks();
+}
+
+async function deleteTask(taskId) {
+    await fetch(`/api/tasks/${taskId}`, {
+        method: "DELETE"
+    });
+    loadTasks();
+}
+
+async function markTask(taskId, is_done) {
+    await fetch(`/api/tasks/${taskId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_done })
+    });
+    loadTasks();
+}
+
+loadTasks();
+</script>
+
+
+{% endblock %}
