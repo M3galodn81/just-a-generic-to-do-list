@@ -11,12 +11,12 @@ Home
 <button type="button"
   class="btn btn-info btn-lg"
   data-toggle="modal"
-  data-target="#myModal">
+  data-target="#addTask">
   Add Task
 </button>
 
-<!-- Modal -->
-<div id="myModal" class="modal fade" role="dialog">
+<!-- Add Task Modal -->
+<div id="addTask" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
     <!-- Modal content-->
@@ -48,29 +48,31 @@ Home
 
 
 <!-- Modal -->
-<div id="myModal" class="modal fade" role="dialog">
+<div id="viewTask" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Add Task</h4>
+        <h4 class="modal-title">View Task</h4>
       </div>
       <div class="modal-body">
-        <input type="text" id="title" class="form-control" placeholder="Title">
-        <br>
-        <textarea id="description" class="form-control" placeholder="Description"></textarea>
-        <br>
-        <select id="priority" class="form-control">
-            <option>LOW</option>
-            <option>MEDIUM</option>
-            <option>HIGH</option>
-            <option>CRITICAL</option>
-        </select>
+        <!-- View Task Modal body -->
+            <input type="text" id="view_title" class="form-control" placeholder="Title">
+            <textarea id="view_description" class="form-control" placeholder="Description"></textarea>
+            <select id="view_priority" class="form-control">
+              <option>LOW</option>
+              <option>MEDIUM</option>
+              <option>HIGH</option>
+              <option>CRITICAL</option>
+            </select>
+            <!-- hidden field to track which task is being viewed -->
+            <input type="hidden" id="view_task_id">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" onclick="editTask()">Save</button>
+        <button onclick="deleteTask(document.getElementById('view_task_id').value)" data-dismiss="modal">Delete</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
@@ -147,7 +149,6 @@ async function loadTasks() {
 }
 
 async function addTask() {
-
     const title = document.getElementById("title").value;
     const description = document.getElementById("description").value;
     const priority = document.getElementById("priority").value;
@@ -165,6 +166,21 @@ async function addTask() {
     });
 
     loadTasks();
+}
+
+
+async function viewTask(taskId) {
+    const response = await fetch(`/api/tasks/${taskId}`);
+    const task = await response.json();
+
+    // populate the view modal fields
+    document.getElementById("view_title").value = task.title;
+    document.getElementById("view_description").value = task.description;
+    document.getElementById("view_priority").value = task.priority;
+    document.getElementById("view_task_id").value = taskId;
+
+    // open the modal
+    $("#viewTask").modal("show");
 }
 
 async function deleteTask(taskId) {
