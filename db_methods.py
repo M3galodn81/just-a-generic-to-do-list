@@ -52,13 +52,13 @@ def get_tasks():
     print(f"Tasks was retrived successfully")
     return jsonify(task_list)
 
-def get_tasks(task_id):
+def get_task(task_id):
 
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
 
-    cursor.execute("SELECT * FROM tasks WHERE id = ?", task_id)
-    task = cursor.fetchall()
+    cursor.execute("SELECT * FROM tasks WHERE id = ?", (task_id,))
+    task = cursor.fetchonce()
 
     connection.close()
 
@@ -123,7 +123,7 @@ def delete_task(task_id):
 
     cursor.execute(
         "DELETE FROM tasks WHERE id = ?",
-        (task_id)
+        (task_id,)
     )
 
     connection.commit()
